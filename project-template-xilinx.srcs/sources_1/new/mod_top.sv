@@ -120,13 +120,7 @@ module mod_top(
     //         end
     //     end
     // end
-    
-    blk_mem_gen_0 bg_R (
-  .clka(clka),    // input wire clka
-  .ena(ena),      // input wire ena
-  .addra(addra),  // input wire [16 : 0] addra
-  .douta(douta)  // output wire [7 : 0] douta
-);
+
     // LED 演示
     wire [31:0] leds;
     assign leds[15:0] = number[15:0];
@@ -149,12 +143,28 @@ module mod_top(
     wire video_hsync;
     wire video_vsync;
 
+    wire[16:0] addra;
+    assign addra = hdata+vdata*400;
+    blk_mem_gen_0 bg_R (
+        .clka(clk_in),    // input wire clka
+        .addra(addra),  // input wire [16 : 0] addra
+        .douta(video_red), // output wire [7 : 0] douta
+    );
+    blk_mem_gen_0 bg_G (
+        .clka(clk_in),    // input wire clka
+        .addra(addra),  // input wire [16 : 0] addra
+        .douta(video_green), // output wire [7 : 0] douta
+    );
+    blk_mem_gen_0 bg_B (
+        .clka(clk_in),    // input wire clka
+        .addra(addra),  // input wire [16 : 0] addra
+        .douta(video_blue), // output wire [7 : 0] douta
+    );
+
     // 生成彩条数据，分别取坐标低位作为 RGB �????
     // 警告：该图像生成方式仅供演示，请勿使用横纵坐标驱动大量�?�辑！！
     assign video_clk = clk_hdmi;
-    assign video_red = 0;
-    assign video_green = 0;
-    assign video_blue = 0;
+
     video #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) u_video800x600at72 (
         .clk(video_clk), 
         .hdata(hdata), //横坐�????
