@@ -1,10 +1,10 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2019.2 (lin64) Build 2708876 Wed Nov  6 21:39:14 MST 2019
-// Date        : Wed Mar 27 15:02:38 2024
-// Host        : cslab-alder running 64-bit Debian GNU/Linux 12 (bookworm)
+// Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
+// Date        : Tue May  7 14:56:53 2024
+// Host        : MSI running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode synth_stub
-//               /home/jiegec/project-template-xilinx/project-template-xilinx.srcs/sources_1/ip/ip_rgb2dvi/ip_rgb2dvi_stub.v
+//               C:/Users/Harrison/source/repos/digital-design-grp-12/project-template-xilinx.srcs/sources_1/ip/ip_rgb2dvi/ip_rgb2dvi_stub.v
 // Design      : ip_rgb2dvi
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a200tfbg484-2
