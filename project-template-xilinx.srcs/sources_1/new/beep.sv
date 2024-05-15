@@ -10,16 +10,15 @@ module  beep
                 XI     =18'd101365    
 )
 (
-    input   wire    sys_clk,
-    input   wire    sys_rst_n,
-    
-    output  reg     beep
+    input  wire sys_clk,
+    input  wire sys_rst_n,
+    output reg  beep
 );
-reg     [24:0]  cnt         ;
-reg     [2:0]   cnt_500ms   ;
-reg     [17:0]  freq_cnt    ;
-reg     [17:0]  freq_data   ;
-wire     [16:0]  duty_data  ;
+reg    [24:0]   cnt;
+reg    [2:0]    cnt_500ms;
+reg    [17:0]   freq_cnt;
+reg    [17:0]   freq_data;
+wire   [16:0]   duty_data;
 
 always@(posedge sys_clk)
     if(sys_rst_n==1'b1)
