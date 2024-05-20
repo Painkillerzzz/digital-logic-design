@@ -29,18 +29,18 @@ module draw_bg(
     );
 
     blk_mem_gen_0 bg_R (
-        .clka(clk_in),    // input wire clka
-        .addra(addra),  // input wire [16 : 0] addra
-        .douta(video_red) // output wire [7 : 0] douta
+        .clka(clk_in),    // input  wire clka
+        .addra(addra),    // input  wire [16:0] addra
+        .douta(video_red) // output wire [7:0] douta
     );
-    blk_mem_gen_0 bg_G (
-        .clka(clk_in),    // input wire clka
-        .addra(addra),  // input wire [16 : 0] addra
-        .douta(video_green) // output wire [7 : 0] douta
+    blk_mem_gen_1 bg_G (
+        .clka(clk_in),      // input  wire clka
+        .addra(addra),      // input  wire [16:0] addra
+        .douta(video_green) // output wire [7:0] douta
     );
-    blk_mem_gen_0 bg_B (
-        .clka(clk_in),    // input wire clka
-        .addra(addra),  // input wire [16 : 0] addra
-        .douta(video_blue) // output wire [7 : 0] douta
+    blk_mem_gen_2 bg_B (
+        .clka(clk_in),     // input  wire clka
+        .addra(addra),     // input  wire [16:0] addra
+        .douta(video_blue) // output wire [7:0] douta
     );
 endmodule

@@ -3,6 +3,8 @@ module mod_top_tb();
 
     reg clock;
     reg reset;
+    
+    wire audio;
 
     initial begin
         $dumpfile("dump.vcd");
@@ -16,7 +18,7 @@ module mod_top_tb();
         #100;
         reset = 1'b0;
 
-        #50000;
+        #500000000;
         $finish;
     end
 
@@ -24,7 +26,8 @@ module mod_top_tb();
 
     mod_top dut(
         .clk_100m(clock),
-        .btn_rst(reset)
+        .btn_rst(reset),
+        .beep(audio)
     );
 
 endmodule
