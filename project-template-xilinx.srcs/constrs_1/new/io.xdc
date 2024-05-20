@@ -181,7 +181,7 @@ set_property -dict {PACKAGE_PIN H14 IOSTANDARD LVCMOS33} [get_ports ps2_keyboard
 # set_property -dict {PACKAGE_PIN H2 IOSTANDARD LVCMOS33} [get_ports pmod1_io[0]]
 # set_property -dict {PACKAGE_PIN G1 IOSTANDARD LVCMOS33} [get_ports pmod1_io[1]]
 # set_property -dict {PACKAGE_PIN F1 IOSTANDARD LVCMOS33} [get_ports pmod1_io[2]]
-# set_property -dict {PACKAGE_PIN E1 IOSTANDARD LVCMOS33} [get_ports pmod1_io[3]]
+ set_property -dict {PACKAGE_PIN E1 IOSTANDARD LVCMOS33} [get_ports beep]
 # set_property -dict {PACKAGE_PIN J2 IOSTANDARD LVCMOS33} [get_ports pmod1_io[4]]
 # set_property -dict {PACKAGE_PIN J1 IOSTANDARD LVCMOS33} [get_ports pmod1_io[5]]
 # set_property -dict {PACKAGE_PIN H5 IOSTANDARD LVCMOS33} [get_ports pmod1_io[6]]
