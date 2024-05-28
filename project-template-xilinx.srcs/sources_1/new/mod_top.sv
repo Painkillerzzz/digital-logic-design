@@ -191,7 +191,7 @@ module mod_top(
             cnt_traj <=0;
         end
         else begin
-            if(cnt_traj==12500000-1)begin
+            if(cnt_traj==4166667-1)begin
                 if(blue_centered)begin
                     redball_xc <= next_pos_xc;
                     redball_yc <= next_pos_yc;
