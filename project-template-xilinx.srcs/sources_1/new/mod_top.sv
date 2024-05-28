@@ -97,17 +97,16 @@ module mod_top(
         .valid     (scancode_valid   )
     );
 
-    always @(posedge clk_in) begin
-        if (btn_rst) begin
-            number <= 32'b0;
-        end else begin
-            if (scancode_valid) begin
-                number <= {number, scancode};
-            end
-        end
-    end
-    wire[1:0] douta;
-    // 自增计数器，用于数码管演�????????
+    // always @(posedge clk_in) begin
+    //     if (btn_rst) begin
+    //         number <= 32'b0;
+    //     end else begin
+    //         if (scancode_valid) begin
+    //             number <= {number, scancode};
+    //         end
+    //     end
+    // end
+    // 自增计数器，用于数码管演�???????????
     // reg [31:0] counter;
     // always @(posedge clk_in) begin
     //     if (btn_rst) begin
@@ -143,33 +142,135 @@ module mod_top(
     wire video_clk; // 像素时钟
     wire video_hsync;
     wire video_vsync;
-    wire [7:0]r;
-    wire [7:0]g;
-    wire [7:0]b;
-    wire[16:0] addra;
-    assign addra = hdata+vdata*400;
-    draw_bg bg(.clk_in(clk_hdmi),.addra(addra),.video_red(r),.video_green(g),.video_blue(b));
+
+    reg blue_centered;// 0为红球，1为蓝�???
+    reg [7:0] last_scancode;
+    always_ff @(posedge clk_in) begin
+        if(btn_rst) begin
+            blue_centered <= 1;
+            last_scancode <= 8'b0;
+        end
+        else begin
+            if(scancode_valid && scancode != last_scancode) begin
+                blue_centered <= ~blue_centered;
+                last_scancode <= scancode;
+            end
+        end
+    end
+    reg[11:0] blueball_xc;// 蓝球横坐�???
+    reg[11:0] blueball_yc;// 蓝球纵坐�???
+    reg[11:0] redball_xc;// 红球横坐�???
+    reg[11:0] redball_yc;// 红球纵坐�???
+    reg[11:0] next_pos_xc;
+    reg[11:0] next_pos_yc;
+    reg[23:0] cnt_traj;
+    wire [11:0] xc;
+    wire [11:0] yc;
+    wire [11:0] cur_x;
+    wire [11:0] cur_y;
+    assign xc = blue_centered ? blueball_xc : redball_xc;
+    assign yc = blue_centered ? blueball_yc : redball_yc;
+    assign cur_x = blue_centered ? redball_xc : blueball_xc;
+    assign cur_y = blue_centered ? redball_yc : blueball_yc;
+    circular_motion gemini(
+            .clk(clk_hdmi),
+            .reset(btn_rst),
+            .xc(xc),
+            .yc(yc),
+            .cur_x(cur_x),
+            .cur_y(cur_y),
+            .next_x(next_pos_xc),
+            .next_y(next_pos_yc)
+    );
+    always_ff @(posedge clk_in) begin
+        if(btn_rst) begin
+            blueball_xc <= 200;
+            blueball_yc <=125;
+            redball_xc <=120;
+            redball_yc <=125;
+            cnt_traj <=0;
+        end
+        else begin
+            if(cnt_traj==4166667-1)begin
+                if(blue_centered)begin
+                    redball_xc <= next_pos_xc;
+                    redball_yc <= next_pos_yc;
+                end else begin
+                    blueball_xc <= next_pos_xc;
+                    blueball_yc <= next_pos_yc;
+                end
+                cnt_traj <=0;
+            end
+            else begin
+            cnt_traj <= cnt_traj+1;
+            end
+        end
+    end
+    reg [31:0] data_in;
+    reg [31:0] counter;
+    always_ff @(posedge clk_hdmi) begin
+        if(btn_rst) begin
+            counter <= 0;
+            data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
+        end else begin
+            if (counter<1000) begin
+                counter <= counter +1;
+                data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
+            end else if (counter < 2000) begin
+                counter <= counter +1;
+                data_in <= {1'b1,1'b0,6'b000000,redball_xc,redball_yc};
+            end else if(counter<1000000)begin
+                counter <= counter +1;
+            end else if (counter < 2500000) begin
+                counter <= counter + 1;
+                data_in <= 0;
+            end else begin
+                counter <= 0;
+            end
+        end
+    end
     
-    wire [7:0] video_red_bg; // 红色分量
-    wire [7:0] video_green_bg; // 绿色分量
-    wire [7:0] video_blue_bg; // 蓝色分量
-    // reg [7:0] shutiao;
-    // always @(posedge clk_hdmi) begin
-    //     if (shutiao==80) begin
-    //         shutiao <= 8'b0000000;
-    //     end else begin
-    //         shutiao <= shutiao+1;
-    //     end
-    // end
-    assign video_red_bg = vdata==100||vdata==150||(hdata%80==0&&vdata>100&&vdata<150) ? 255:r;
-    assign video_green_bg = vdata==100||vdata==150||(hdata%80==0&&vdata>100&&vdata<150) ? 255:g;
-    assign video_blue_bg = vdata==100||vdata==150||(hdata%80==0&&vdata>100&&vdata<150) ? 0:b;
-    assign video_red = hdata<400&&vdata<250?video_red_bg:0;
-    assign video_green = hdata<400&&vdata<250?video_green_bg:0;
-    assign video_blue = hdata<400&&vdata<250?video_blue_bg:0;
+    wire ena;
+    wire enb;
+    wire[16:0] addra;
+    wire[16:0] addrb;
+    wire[23:0] dina;
+    wire[23:0] op;
+    vram_wr u_vram_wr(
+        .clk(clk_hdmi),
+        .rst(btn_rst),
+        .data_in(data_in),
+        .ena(ena),
+        .addr(addra),
+        .din(dina)
+    );
+    vram_rd u_vram_rd(
+        .clk(clk_hdmi),
+        .rst(btn_rst),
+        .hdata(hdata),
+        .vdata(vdata),
+        .ena(enb),
+        .addr(addrb)
+    );
+    vram v(
+        .clka(clk_hdmi),
+        .ena(ena),
+        .wea(ena),
+        .addra(addra),
+        .dina(dina),
+        .clkb(clk_hdmi),
+        .enb(enb),
+        .addrb(addrb),
+        .doutb(op)
+    );
+    assign video_red = op[23:16];
+    assign video_green = op[15:8];
+    assign video_blue = op[7:0];
     
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
-    // 生成彩条数据，分别取坐标低位作为 RGB �????????
+    // 生成彩条数据，分别取坐标低位作为 RGB �???????????
+    // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
+    // 生成彩条数据，分别取坐标低位作为 RGB �???????????
     // 警告：该图像生成方式仅供演示，请勿使用横纵坐标驱动大量�?�辑！！
     assign video_clk = clk_hdmi;
 

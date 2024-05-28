@@ -97,7 +97,7 @@ module audio #(
     end
 
     // 实例�?? rom
-    castle_in_the_sky music (
+    blk_mem_gen_3 music (
         .clka(clk),        // input  wire clka
         .addra(pitch_num), // input  wire [8:0] addra
         .douta(pitch)      // output wire [6:0] douta
