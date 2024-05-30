@@ -3,22 +3,22 @@ module mod_top(
     // 时钟
     input  wire clk_100m,           // 100M 输入时钟
 
-    // �????????�????????
-    input  wire btn_clk,            // 左侧微动�????????关（CLK），推荐作为手动时钟，带消抖电路，按下时�???????? 1
-    input  wire btn_rst,            // 右侧微动�????????关（RST），推荐作为手动复位，带消抖电路，按下时�???????? 1
-    input  wire [3:0]  btn_push,    // 四个按钮�????????关（KEY1-4），按下时为 1
-    input  wire [15:0] dip_sw,      // 16 位拨码开关，拨到 “ON�???????? 时为 0
+    // �??????????�??????????
+    input  wire btn_clk,            // 左侧微动�??????????关（CLK），推荐作为手动时钟，带消抖电路，按下时�?????????? 1
+    input  wire btn_rst,            // 右侧微动�??????????关（RST），推荐作为手动复位，带消抖电路，按下时�?????????? 1
+    input  wire [3:0]  btn_push,    // 四个按钮�??????????关（KEY1-4），按下时为 1
+    input  wire [15:0] dip_sw,      // 16 位拨码开关，拨到 “ON�?????????? 时为 0
 
-    // 32 �???????? LED 灯，配合 led_scan 模块使用
-    output wire [7:0] led_bit,      // 8 �???????? LED 信号
-    output wire [3:0] led_com,      // LED 扫描信号，每�????????位对�???????? 8 位的 LED 信号
+    // 32 �?????????? LED 灯，配合 led_scan 模块使用
+    output wire [7:0] led_bit,      // 8 �?????????? LED 信号
+    output wire [3:0] led_com,      // LED 扫描信号，每�??????????位对�?????????? 8 位的 LED 信号
 
     // 数码管，配合 dpy_scan 模块使用
-    output wire [7:0] dpy_digit,   // 七段数码管笔段信�????????
+    output wire [7:0] dpy_digit,   // 七段数码管笔段信�??????????
     output wire [7:0] dpy_segment, // 七段数码管位扫描信号
 
     // 以下是一些被注释掉的外设接口
-    // 若要使用，不要忘记去�???????? io.xdc 中对应行的注�????????
+    // 若要使用，不要忘记去�?????????? io.xdc 中对应行的注�??????????
 
     // PS/2 键盘
     input  wire        ps2_keyboard_clk,     // PS/2 键盘时钟信号
@@ -28,15 +28,15 @@ module mod_top(
     // inout  wire       ps2_mouse_clk,     // PS/2 时钟信号
     // inout  wire       ps2_mouse_data,    // PS/2 数据信号
 
-    // SD 卡（SPI 模式�????????
+    // SD 卡（SPI 模式�??????????
     // output wire        sd_sclk,     // SPI 时钟
     // output wire        sd_mosi,     // 数据输出
     // input  wire        sd_miso,     // 数据输入
-    // output wire        sd_cs,       // SPI 片�?�，低有�????????
+    // output wire        sd_cs,       // SPI 片�?�，低有�??????????
     // input  wire        sd_cd,       // 卡插入检测，0 表示有卡插入
-    // input  wire        sd_wp,       // 写保护检测，0 表示写保护状�????????
+    // input  wire        sd_wp,       // 写保护检测，0 表示写保护状�??????????
 
-    // RGMII 以太网接�????????
+    // RGMII 以太网接�??????????
     // output wire        rgmii_clk125,
     // input  wire        rgmii_rx_clk,
     // input  wire        rgmii_rx_ctl,
@@ -46,12 +46,12 @@ module mod_top(
     // output wire [3: 0] rgmii_tx_data,
 
     // 4MB SRAM 内存
-    inout  wire [31:0] base_ram_data,   // SRAM 数据
-    output wire [19:0] base_ram_addr,   // SRAM 地址
-    output wire [3: 0] base_ram_be_n,   // SRAM 字节使能，低有效。如果不使用字节使能，请保持�????????0
-    output wire        base_ram_ce_n,   // SRAM 片�?�，低有�????????
-    output wire        base_ram_oe_n,   // SRAM 读使能，低有�????????
-    output wire        base_ram_we_n,   // SRAM 写使能，低有�????????
+//    inout  wire [31:0] base_ram_data,   // SRAM 数据
+//    output wire [19:0] base_ram_addr,   // SRAM 地址
+//    output wire [3: 0] base_ram_be_n,   // SRAM 字节使能，低有效。如果不使用字节使能，请保持�??????????0
+//    output wire        base_ram_ce_n,   // SRAM 片�?�，低有�??????????
+//    output wire        base_ram_oe_n,   // SRAM 读使能，低有�??????????
+//    output wire        base_ram_we_n,   // SRAM 写使能，低有�??????????
 
     // HDMI 图像输出
     output wire [2:0] hdmi_tmds_n,    // HDMI TMDS 数据信号
@@ -62,20 +62,20 @@ module mod_top(
     output wire beep
     );
 
-    // 使用 100MHz 时钟作为后续逻辑的时�????????
+    // 使用 100MHz 时钟作为后续逻辑的时�??????????
     wire clk_in = clk_100m;
 
-    // PLL 分频演示，从输入产生不同频率的时�????????
+    // PLL 分频演示，从输入产生不同频率的时�??????????
     wire clk_hdmi;
     wire clk_locked;
     ip_pll u_ip_pll(
         .clk_in1  (clk_in    ),  // 输入 100MHz 时钟
         .reset    (btn_rst   ),  // 复位信号，高有效
         .clk_out1 (clk_hdmi  ),  // 50MHz 像素时钟
-        .locked   (clk_locked)   // 高表�???????? 50MHz 时钟已经稳定输出
+        .locked   (clk_locked)   // 高表�?????????? 50MHz 时钟已经稳定输出
     );
 
-    // 七段数码管扫描演�????????
+    // 七段数码管扫描演�??????????
     reg [31:0] number;
     dpy_scan u_dpy_scan (
         .clk     (clk_in      ),
@@ -85,7 +85,7 @@ module mod_top(
         .digit   (dpy_digit   ),
         .segment (dpy_segment )
     );
-    // 在数码管上显�???????? PS/2 Keyboard scancode
+    // 在数码管上显�?????????? PS/2 Keyboard scancode
     wire [7:0] scancode;
     wire scancode_valid;
     ps2_keyboard u_ps2_keyboard (
@@ -106,7 +106,7 @@ module mod_top(
     //         end
     //     end
     // end
-    // 自增计数器，用于数码管演�???????????
+    // 自增计数器，用于数码管演�?????????????
     // reg [31:0] counter;
     // always @(posedge clk_in) begin
     //     if (btn_rst) begin
@@ -134,8 +134,8 @@ module mod_top(
     );
 
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
-    wire [11:0] hdata;  // 当前横坐�????????
-    wire [11:0] vdata;  // 当前纵坐�????????
+    wire [11:0] hdata;  // 当前横坐�??????????
+    wire [11:0] vdata;  // 当前纵坐�??????????
     wire [7:0] video_red; // 红色分量
     wire [7:0] video_green; // 绿色分量
     wire [7:0] video_blue; // 蓝色分量
@@ -143,7 +143,7 @@ module mod_top(
     wire video_hsync;
     wire video_vsync;
 
-    reg blue_centered;// 0为红球，1为蓝�???
+    reg blue_centered;// 0为红球，1为蓝�?????
     reg [7:0] last_scancode;
     always_ff @(posedge clk_in) begin
         if(btn_rst) begin
@@ -157,10 +157,10 @@ module mod_top(
             end
         end
     end
-    reg[11:0] blueball_xc;// 蓝球横坐�???
-    reg[11:0] blueball_yc;// 蓝球纵坐�???
-    reg[11:0] redball_xc;// 红球横坐�???
-    reg[11:0] redball_yc;// 红球纵坐�???
+    reg[11:0] blueball_xc;// 蓝球横坐�?????
+    reg[11:0] blueball_yc;// 蓝球纵坐�?????
+    reg[11:0] redball_xc;// 红球横坐�?????
+    reg[11:0] redball_yc;// 红球纵坐�?????
     reg[11:0] next_pos_xc;
     reg[11:0] next_pos_yc;
     reg[23:0] cnt_traj;
@@ -268,22 +268,22 @@ module mod_top(
     assign video_blue = op[7:0];
     
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
-    // 生成彩条数据，分别取坐标低位作为 RGB �???????????
+    // 生成彩条数据，分别取坐标低位作为 RGB �?????????????
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
-    // 生成彩条数据，分别取坐标低位作为 RGB �???????????
+    // 生成彩条数据，分别取坐标低位作为 RGB �?????????????
     // 警告：该图像生成方式仅供演示，请勿使用横纵坐标驱动大量�?�辑！！
     assign video_clk = clk_hdmi;
 
     video #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) u_video800x600at72 (
         .clk(video_clk), 
-        .hdata(hdata), //横坐�????????
-        .vdata(vdata), //纵坐�????????
+        .hdata(hdata), //横坐�??????????
+        .vdata(vdata), //纵坐�??????????
         .hsync(video_hsync),
         .vsync(video_vsync),
         .data_enable(video_de)
     );
 
-    // �???????? RGB 转化�???????? HDMI TMDS 信号并输�????????
+    // �?????????? RGB 转化�?????????? HDMI TMDS 信号并输�??????????
     ip_rgb2dvi u_ip_rgb2dvi (
         .PixelClk   (video_clk),
         .vid_pVDE   (video_de),
@@ -298,34 +298,47 @@ module mod_top(
         .TMDS_Data_n (hdmi_tmds_n)
     );
     
+    wire check_en;
+
     audio u_audio (
         .clk(clk_in),
         .rst(btn_rst),
-        .audio_out(beep)
+        .audio_out(beep),
+        .check_out(check_en)
     );
 
-    wire ctrl_ram_read;
-    wire ctrl_ram_write;
-    wire [19:0] ctrl_ram_addr;
-    wire [31:0] write_ram_data;
-    wire [31:0] read_ram_data;
-    wire [3:0] ctrl_ram_be_n;
-    sram_controller u_sram_controller (
+    check_hit #(
+        50000000
+    ) u_check_hit (
         .clk(clk_in),
         .rst(btn_rst),
-        .read(ctrl_ram_read),
-        .write(ctrl_ram_write),
-        .in_addr(ctrl_ram_addr),
-        .out_addr(base_ram_addr),
-        .in_data(write_ram_data),
-        .out_data(read_ram_data),
-        .base_ram_data(base_ram_data),
-        .in_be_n(ctrl_ram_be_n),
-        .be_n(base_ram_be_n),
-        .ce_n(base_ram_ce_n),
-        .oe_n(base_ram_oe_n),
-        .we_n(base_ram_we_n),
+        .last_scancode(last_scancode),
+        .scancode(scancode),
+        .check_en(check_en),
+        .health(number)
     );
+//    wire ctrl_ram_read;
+//    wire ctrl_ram_write;
+//    wire [19:0] ctrl_ram_addr;
+//    wire [31:0] write_ram_data;
+//    wire [31:0] read_ram_data;
+//    wire [3:0] ctrl_ram_be_n;
+//    sram_controller u_sram_controller (
+//        .clk(clk_in),
+//        .rst(btn_rst),
+//        .read(ctrl_ram_read),
+//        .write(ctrl_ram_write),
+//        .in_addr(ctrl_ram_addr),
+//        .out_addr(base_ram_addr),
+//        .in_data(write_ram_data),
+//        .out_data(read_ram_data),
+//        .base_ram_data(base_ram_data),
+//        .in_be_n(ctrl_ram_be_n),
+//        .be_n(base_ram_be_n),
+//        .ce_n(base_ram_ce_n),
+//        .oe_n(base_ram_oe_n),
+//        .we_n(base_ram_we_n),
+//    );
 
     // 7 段数码管显示
     wire [6:0] seg7_a;
