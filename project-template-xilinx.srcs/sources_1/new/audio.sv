@@ -1,6 +1,8 @@
 module audio #(
-        parameter  MCNT_125_MAX = 50_000_000, // 0.5s 
-                    STACCATO_MAX = 45_000_000, // 0.45s 
+        parameter   MCNT_125_MAX = 25_000_000, // 0.5s 
+                    STACCATO_MAX = 22_500_000, // 0.45s
+                    CHECK_START  = 15_000_000,
+                    CHECK_END    = 10_000_000,
                     L1 = 340136, // D 调低�?????? 1
                     L2 = 321046, // D 调低�?????? 2
                     L3 = 303027, // D 调低�?????? 3
@@ -42,7 +44,7 @@ module audio #(
         input  wire clk,
         input  wire rst,
         output reg  audio_out,
-        output reg check_out
+        output reg  check_out
     );
 
     reg  [31:0] ctr_arr;    // 预重装�??
@@ -50,9 +52,6 @@ module audio #(
     reg  [8:0]  pitch_num;  // 音乐的音调编�??????
     wire [7:0]  pitch;      // 音乐的音�??????
     reg  pwm_gen_en;
-
-    parameter CHECK_START  = 40_000_000;
-    parameter CHECK_END    = 10_000_000;
         
     //根据 rom 存储输出不同的音调输出不同的预置�??????
     always @(posedge clk) begin
@@ -110,7 +109,7 @@ module audio #(
         .douta(pitch)      // output wire [7:0] douta
     );
 
-    reg [23:0] cnt_125;
+    reg [25:0] cnt_125;
 
     // 分频125ms
     always @(posedge clk) begin

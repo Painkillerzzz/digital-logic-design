@@ -85,7 +85,7 @@ module mod_top(
         .digit   (dpy_digit   ),
         .segment (dpy_segment )
     );
-    // 在数码管上显�?????????? PS/2 Keyboard scancode
+
     wire [7:0] scancode;
     wire scancode_valid;
     ps2_keyboard u_ps2_keyboard (
@@ -94,8 +94,25 @@ module mod_top(
         .ps2_clock (ps2_keyboard_clk ),
         .ps2_data  (ps2_keyboard_data),
         .scancode  (scancode         ),
-        .valid     (scancode_valid   )
+        .valid     (scancode_valid   ),
+        .change    (scancode_change  )
     );
+
+    wire scancode_change;
+
+    reg [7:0] hit_num;
+    always @(posedge clk_in) begin
+        if (btn_rst) begin
+            hit_num <= 8'b0;
+        end else begin
+            if (scancode_change) begin
+                hit_num <= hit_num + 8'b1;
+            end
+        end
+    end
+    assign leds[31:24] = hit_num;
+    
+
 
     // always @(posedge clk_in) begin
     //     if (btn_rst) begin
@@ -123,8 +140,8 @@ module mod_top(
 
     // LED 演示
     wire [31:0] leds;
-    assign leds[15:0] = number[15:0];
-    assign leds[31:16] = ~(dip_sw) ^ btn_push;
+    assign leds[0] = check_en;
+    assign leds[9:8] = death_cause;
     led_scan u_led_scan (
         .clk     (clk_in      ),
         .leds    (leds        ),
@@ -144,16 +161,13 @@ module mod_top(
     wire video_vsync;
 
     reg blue_centered;// 0为红球，1为蓝�?????
-    reg [7:0] last_scancode;
     always_ff @(posedge clk_in) begin
         if(btn_rst) begin
             blue_centered <= 1;
-            last_scancode <= 8'b0;
         end
         else begin
-            if(scancode_valid && scancode != last_scancode) begin
+            if(scancode_change) begin
                 blue_centered <= ~blue_centered;
-                last_scancode <= scancode;
             end
         end
     end
@@ -307,16 +321,19 @@ module mod_top(
         .check_out(check_en)
     );
 
-    check_hit #(
-        50000000
-    ) u_check_hit (
+
+    reg [1:0] death_cause; // 0 alive, 1 hit when idle, 2 double-hit, 3 miss
+    check_hit u_check_hit (
         .clk(clk_in),
         .rst(btn_rst),
-        .last_scancode(last_scancode),
-        .scancode(scancode),
+        .scancode_change(scancode_change),
         .check_en(check_en),
-        .health(number)
+        .health(number),
+        .death_cause(death_cause),
+        .hit_cnt(leds[12])
     );
+
+    
 //    wire ctrl_ram_read;
 //    wire ctrl_ram_write;
 //    wire [19:0] ctrl_ram_addr;
