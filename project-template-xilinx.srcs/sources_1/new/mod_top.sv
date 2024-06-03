@@ -227,10 +227,10 @@ module mod_top(
             counter <= 0;
             data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
         end else begin
-            if (counter<1000) begin
+            if (counter<2000) begin
                 counter <= counter +1;
                 data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
-            end else if (counter < 2000) begin
+            end else if (counter < 4000) begin
                 counter <= counter +1;
                 data_in <= {1'b1,1'b0,6'b000000,redball_xc,redball_yc};
             end else if(counter<1000000)begin
@@ -246,8 +246,8 @@ module mod_top(
     
     wire ena;
     wire enb;
-    wire[16:0] addra;
-    wire[16:0] addrb;
+    wire[18:0] addra;
+    wire[18:0] addrb;
     wire[23:0] dina;
     wire[23:0] op;
     vram_wr u_vram_wr(
@@ -266,7 +266,7 @@ module mod_top(
         .ena(enb),
         .addr(addrb)
     );
-    vram v(
+    vram_full v(
         .clka(clk_hdmi),
         .ena(ena),
         .wea(ena),
