@@ -56,7 +56,9 @@ module ps2_keyboard (
             if(change) begin
                 change <= 0;
             end else if(valid && scancode != last_scancode) begin
-                change <= 1;
+                if(scancode!=0)begin
+                    change <= 1;
+                end
                 last_scancode <= scancode;
             end
         end

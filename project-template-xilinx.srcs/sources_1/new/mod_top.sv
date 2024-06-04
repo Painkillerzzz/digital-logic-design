@@ -205,7 +205,7 @@ module mod_top(
             cnt_traj <=0;
         end
         else begin
-            if(cnt_traj==4166667-1)begin
+            if(cnt_traj==2_083_333)begin
                 if(blue_centered)begin
                     redball_xc <= next_pos_xc;
                     redball_yc <= next_pos_yc;
@@ -233,7 +233,7 @@ module mod_top(
             end else if (counter < 4000) begin
                 counter <= counter +1;
                 data_in <= {1'b1,1'b0,6'b000000,redball_xc,redball_yc};
-            end else if(counter<1000000)begin
+            end else if(counter<2000000)begin
                 counter <= counter +1;
             end else if (counter < 2500000) begin
                 counter <= counter + 1;
