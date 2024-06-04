@@ -19,22 +19,29 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module tb_audio();
+module tb_check_hit();
 
     // Inputs
     reg clk;
     reg rst;
+    reg check_en;
+    reg [7:0] scancode;
+    reg [7:0] last_scancode;
 
     // Outputs
-    wire audio_out;
-    wire check_out;
+    wire [23:0] number;
+    
 
     // Instantiate the audio module
-    audio uut (
+    check_hit #(
+        100
+    ) u_check_hit (
         .clk(clk),
         .rst(rst),
-        .audio_out(audio_out),
-        .check_out(check_out)
+        .last_scancode(last_scancode),
+        .scancode(scancode),
+        .check_en(check_en),
+        .health(number)
     );
 
     // Clock generation using forever loop
@@ -44,17 +51,29 @@ module tb_audio();
     end
 
     initial begin
-        // Initialize Inputs
         rst = 1;
-
-        // Wait for global reset
         #20;
         rst = 0;
+    end
+    
+    initial begin
+        check_en = 0;
+        #20;
+        check_en = 1;
+        forever begin #2000 check_en = ~check_en; end
+    end
 
-        // Run simulation indefinitely
-        // Simulation will not stop automatically
-        // Manually stop the simulation in your simulation environment
-        // when you have observed enough behavior
+    initial begin
+        scancode = 8'b0;
+        last_scancode = 8'b0;
+        forever
+        begin
+            #1000;
+            scancode = ~scancode;
+            #10;
+            last_scancode = scancode;
+            #2990;
+        end
     end
 
 endmodule

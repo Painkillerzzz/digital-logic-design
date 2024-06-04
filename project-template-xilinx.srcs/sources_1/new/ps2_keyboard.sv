@@ -6,8 +6,9 @@ module ps2_keyboard (
     input wire ps2_clock,
     input wire ps2_data,
 
-    output wire [7:0] scancode,
-    output wire valid
+    output reg [7:0] scancode,
+    output reg valid,
+    output reg change
 );
     // capture ps2 clock and data
     reg clk1_reg;
@@ -44,6 +45,24 @@ module ps2_keyboard (
 
     assign scancode = valid_reg ? code_reg : 8'b0;
     assign valid = valid_reg;
+
+    reg [7:0] last_scancode;
+    always_ff @(posedge clock) begin
+        if(reset) begin
+            change <= 0;
+            last_scancode <= 8'b0;
+        end
+        else begin
+            if(change) begin
+                change <= 0;
+            end else if(valid && scancode != last_scancode) begin
+                if(scancode!=0)begin
+                    change <= 1;
+                end
+                last_scancode <= scancode;
+            end
+        end
+    end
 
     always_ff @ (posedge clock) begin
         if (reset) begin

@@ -3,8 +3,8 @@
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
 // Date        : Tue May 21 15:07:12 2024
 // Host        : MSI running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub
-//               c:/Users/Harrison/source/repos/digital-design-grp-12/project-template-xilinx.srcs/sources_1/ip/blueball_B/blueball_B_stub.v
+// Command     : write_verilog -force -mode synth_stub -rename_top blueball_B -prefix
+//               blueball_B_ blueball_B_stub.v
 // Design      : blueball_B
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a200tfbg484-2
