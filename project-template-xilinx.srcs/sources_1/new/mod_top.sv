@@ -198,10 +198,10 @@ module mod_top(
     );
     always_ff @(posedge clk_in) begin
         if(btn_rst) begin
-            blueball_xc <= 200;
-            blueball_yc <=125;
-            redball_xc <=120;
-            redball_yc <=125;
+            blueball_xc <= 74;
+            blueball_yc <=437;
+            redball_xc <=34;
+            redball_yc <=437;
             cnt_traj <=0;
         end
         else begin
