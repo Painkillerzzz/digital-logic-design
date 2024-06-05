@@ -1,8 +1,8 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Tue May 21 15:04:52 2024
-// Host        : MSI running 64-bit major release  (build 9200)
+// Date        : Tue May 28 17:21:38 2024
+// Host        : localhost running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode synth_stub -rename_top blueball_R -prefix
 //               blueball_R_ blueball_R_stub.v
 // Design      : blueball_R
