@@ -25,6 +25,7 @@ module page_controller(
     input wire rst,
     input wire kb_change,
     input wire stage_clear,
+    input wire stage_fail,
     output reg [2:0] page_state
     );
 
@@ -60,8 +61,10 @@ module page_controller(
                 end
             end
             STAGE_1: begin
-                if (stage_clear) begin
+                if (stage_clear && kb_change) begin
                     next_state <= STAGE_1_CLEAR;
+                end else if (stage_fail && kb_change) begin
+                    next_state <= START_PAGE;
                 end else begin
                     next_state <= STAGE_1;
                 end
@@ -74,8 +77,10 @@ module page_controller(
                 end
             end
             STAGE_2: begin
-                if (stage_clear) begin
+                if (stage_clear && kb_change) begin
                     next_state <= STAGE_2_CLEAR;
+                end else if (stage_fail && kb_change) begin
+                    next_state <= START_PAGE;
                 end else begin
                     next_state <= STAGE_2;
                 end
@@ -88,8 +93,10 @@ module page_controller(
                 end
             end
             STAGE_3: begin
-                if (stage_clear) begin
+                if (stage_clear && kb_change) begin
                     next_state <= STAGE_3_CLEAR;
+                end else if (stage_fail && kb_change) begin
+                    next_state <= START_PAGE;
                 end else begin
                     next_state <= STAGE_3;
                 end

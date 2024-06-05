@@ -333,6 +333,19 @@ module mod_top(
         .hit_cnt(leds[12])
     );
 
+    wire stage_clear;
+    wire stage_fail;
+    wire [2:0] page_state;
+
+    page_controller u_page_controller (
+        .clk(clk_in),
+        .rst(btn_rst),
+        .kb_change(scancode_change),
+        .stage_clear(stage_clear),
+        .stage_fail(stage_fail),
+        .page_state(page_state)
+    );
+
     
 //    wire ctrl_ram_read;
 //    wire ctrl_ram_write;
