@@ -11,12 +11,12 @@ module vram_rd(
     assign ena = 1'b1;
     always_ff @(posedge clk or posedge rst)begin
         if(rst)begin
-            if(hdata<800&&vdata<500) addr<= hdata+vdata*800;
-            else if(hdata>=800&&vdata<500) addr <= 799+vdata*800;
+            if(hdata<800&&vdata<600) addr<= hdata+vdata*800;
+            else if(hdata>=800&&vdata<600) addr <= 799+vdata*800;
             else addr <= 0;
         end else begin
-            if(hdata<800&&vdata<500)begin
-                if(addr==400000-1)begin
+            if(hdata<800&&vdata<600)begin
+                if(addr==480000-1)begin
                     addr <= 0;
                 end else begin
                     addr <= addr + 1;

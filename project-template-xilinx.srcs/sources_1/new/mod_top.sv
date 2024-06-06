@@ -46,12 +46,12 @@ module mod_top(
     // output wire [3: 0] rgmii_tx_data,
 
     // 4MB SRAM 内存
-//    inout  wire [31:0] base_ram_data,   // SRAM 数据
-//    output wire [19:0] base_ram_addr,   // SRAM 地址
-//    output wire [3: 0] base_ram_be_n,   // SRAM 字节使能，低有效。如果不使用字节使能，请保持�??????????0
-//    output wire        base_ram_ce_n,   // SRAM 片�?�，低有�??????????
-//    output wire        base_ram_oe_n,   // SRAM 读使能，低有�??????????
-//    output wire        base_ram_we_n,   // SRAM 写使能，低有�??????????
+    inout  wire [31:0] base_ram_data,   // SRAM 数据
+    output wire [19:0] base_ram_addr,   // SRAM 地址
+    output wire [3: 0] base_ram_be_n,   // SRAM 字节使能，低有效。如果不使用字节使能，请保持�??????????0
+    output wire        base_ram_ce_n,   // SRAM 片�?�，低有�??????????
+    output wire        base_ram_oe_n,   // SRAM 读使能，低有�??????????
+    output wire        base_ram_we_n,   // SRAM 写使能，低有�??????????
 
     // HDMI 图像输出
     output wire [2:0] hdmi_tmds_n,    // HDMI TMDS 数据信号
@@ -198,10 +198,10 @@ module mod_top(
     );
     always_ff @(posedge clk_in) begin
         if(btn_rst) begin
-            blueball_xc <= 74;
-            blueball_yc <=437;
-            redball_xc <=34;
-            redball_yc <=437;
+            blueball_xc <= 109;
+            blueball_yc <=327;
+            redball_xc <=66;
+            redball_yc <=327;
             cnt_traj <=0;
         end
         else begin
@@ -220,97 +220,118 @@ module mod_top(
             end
         end
     end
-    reg [31:0] data_in;
-    reg [31:0] counter;
-    always_ff @(posedge clk_hdmi) begin
-        if(btn_rst) begin
-            counter <= 0;
-            data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
-        end else begin
-            if (counter<2000) begin
-                counter <= counter +1;
-                data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
-            end else if (counter < 4000) begin
-                counter <= counter +1;
-                data_in <= {1'b1,1'b0,6'b000000,redball_xc,redball_yc};
-            end else if(counter<2000000)begin
-                counter <= counter +1;
-            end else if (counter < 2500000) begin
-                counter <= counter + 1;
-                data_in <= 0;
-            end else begin
-                counter <= 0;
-            end
-        end
-    end
+
+    // reg [31:0] data_in;
+    // reg [31:0] counter;
+    // always_ff @(posedge clk_hdmi) begin
+    //     if(btn_rst) begin
+    //         counter <= 0;
+    //         data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
+    //     end else begin
+    //         if (counter<2000) begin
+    //             counter <= counter +1;
+    //             data_in <= {1'b1,1'b1,6'b000000,blueball_xc,blueball_yc};
+    //         end else if (counter < 4000) begin
+    //             counter <= counter +1;
+    //             data_in <= {1'b1,1'b0,6'b000000,redball_xc,redball_yc};
+    //         end else if(counter<2000000)begin
+    //             counter <= counter +1;
+    //         end else if (counter < 2500000) begin
+    //             counter <= counter + 1;
+    //             data_in <= 0;
+    //         end else begin
+    //             counter <= 0;
+    //         end
+    //     end
+    // end
     
-    wire ena;
-    wire enb;
-    wire[18:0] addra;
-    wire[18:0] addrb;
-    wire[23:0] dina;
-    wire[23:0] op;
-    vram_wr u_vram_wr(
-        .clk(clk_hdmi),
-        .rst(btn_rst),
-        .data_in(data_in),
-        .ena(ena),
-        .addr(addra),
-        .din(dina)
-    );
-    vram_rd u_vram_rd(
-        .clk(clk_hdmi),
-        .rst(btn_rst),
-        .hdata(hdata),
-        .vdata(vdata),
-        .ena(enb),
-        .addr(addrb)
-    );
-    vram_full v(
-        .clka(clk_hdmi),
-        .ena(ena),
-        .wea(ena),
-        .addra(addra),
-        .dina(dina),
-        .clkb(clk_hdmi),
-        .enb(enb),
-        .addrb(addrb),
-        .doutb(op)
-    );
-    assign video_red = op[23:16];
-    assign video_green = op[15:8];
-    assign video_blue = op[7:0];
+    // wire ena;
+    // wire enb;
+    // wire[18:0] addra;
+    // wire[18:0] addrb;
+    // wire[11:0] dina;
+    // wire[11:0] op;
+    // vram_wr u_vram_wr(
+    //     .clk(clk_hdmi),
+    //     .rst(btn_rst),
+    //     .data_in(data_in),
+    //     .ena(ena),
+    //     .addr(addra),
+    //     .din(dina)
+    // );
+    // vram_rd u_vram_rd(
+    //     .clk(clk_hdmi),
+    //     .rst(btn_rst),
+    //     .hdata(hdata),
+    //     .vdata(vdata),
+    //     .ena(enb),
+    //     .addr(addrb)
+    // );
+    // vram_full v(
+    //     .clka(clk_hdmi),
+    //     .ena(ena),
+    //     .wea(ena),
+    //     .addra(addra),
+    //     .dina(dina),
+    //     .clkb(clk_hdmi),
+    //     .enb(enb),
+    //     .addrb(addrb),
+    //     .doutb(op)
+    // );
+    // assign video_red = {op[11:8],op[11:8]};
+    // assign video_green = {op[7:4],op[7:4]};
+    // assign video_blue = {op[3:0],op[3:0]};
     
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
     // 生成彩条数据，分别取坐标低位作为 RGB �?????????????
     // 图像输出演示，分辨率 800x600@72Hz，像素时钟为 50MHz，显示渐变色彩条
     // 生成彩条数据，分别取坐标低位作为 RGB �?????????????
     // 警告：该图像生成方式仅供演示，请勿使用横纵坐标驱动大量�?�辑！！
-    assign video_clk = clk_hdmi;
-
-    video #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) u_video800x600at72 (
-        .clk(video_clk), 
-        .hdata(hdata), //横坐�??????????
-        .vdata(vdata), //纵坐�??????????
-        .hsync(video_hsync),
-        .vsync(video_vsync),
-        .data_enable(video_de)
+    // assign video_clk = clk_hdmi;
+    display_controller #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) u_display_controller (
+        .clk_sram(clk_100m),
+        .clk_hdmi(clk_hdmi),
+        .clk_locked(clk_locked),
+        .btn_rst(btn_rst),
+        .blueball_xc(blueball_xc),
+        .blueball_yc(blueball_yc),
+        .redball_xc(redball_xc),
+        .redball_yc(redball_yc),
+        .bg_stage(2),
+        .base_ram_data(base_ram_data),
+        .base_ram_addr(base_ram_addr),
+        .base_ram_be_n(base_ram_be_n),
+        .base_ram_ce_n(base_ram_ce_n),
+        .base_ram_oe_n(base_ram_oe_n),
+        .base_ram_we_n(base_ram_we_n),
+        .hdmi_tmds_c_p(hdmi_tmds_c_p),
+        .hdmi_tmds_c_n(hdmi_tmds_c_n),
+        .hdmi_tmds_p(hdmi_tmds_p),
+        .hdmi_tmds_n(hdmi_tmds_n)
     );
+    // video #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) u_video800x600at72 (
+    //     .clk(video_clk), 
+    //     .hdata(hdata), //横坐�??????????
+    //     .vdata(vdata), //纵坐�??????????
+    //     .hsync(video_hsync),
+    //     .vsync(video_vsync),
+    //     .data_enable(video_de)
+    // );
 
-    // �?????????? RGB 转化�?????????? HDMI TMDS 信号并输�??????????
-    ip_rgb2dvi u_ip_rgb2dvi (
-        .PixelClk   (video_clk),
-        .vid_pVDE   (video_de),
-        .vid_pHSync (video_hsync),
-        .vid_pVSync (video_vsync),
-        .vid_pData  ({video_red, video_blue, video_green}),
-        .aRst       (~clk_locked),
+    // // �?????????? RGB 转化�?????????? HDMI TMDS 信号并输�??????????
+    // ip_rgb2dvi u_ip_rgb2dvi (
+    //     .PixelClk   (video_clk),
+    //     .vid_pVDE   (video_de),
+    //     .vid_pHSync (video_hsync),
+    //     .vid_pVSync (video_vsync),
+    //     .vid_pData  ({video_red, video_blue, video_green}),
+    //     .aRst       (~clk_locked),
 
-        .TMDS_Clk_p  (hdmi_tmds_c_p),
-        .TMDS_Clk_n  (hdmi_tmds_c_n),
-        .TMDS_Data_p (hdmi_tmds_p),
-        .TMDS_Data_n (hdmi_tmds_n)
-    );
+    //     .TMDS_Clk_p  (hdmi_tmds_c_p),
+    //     .TMDS_Clk_n  (hdmi_tmds_c_n),
+    //     .TMDS_Data_p (hdmi_tmds_p),
+    //     .TMDS_Data_n (hdmi_tmds_n)
+    // );
     
     wire check_en;
 
