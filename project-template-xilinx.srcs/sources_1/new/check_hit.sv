@@ -3,7 +3,7 @@
 import namespace::*;
 
 module check_hit #(
-    parameter INTERVAL = 198_000, // check interval length / 2 / TOTAL_HEALTH
+    parameter INTERVAL = 3_960_000, // check interval length / HEALTH_DE
               TOTAL_HEALTH = 100,
               HEALTH_DE = 5
 ) (

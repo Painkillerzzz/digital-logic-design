@@ -26,11 +26,8 @@ package namespace;
     typedef enum logic [2:0] { 
         START_PAGE,
         STAGE_1,
-        STAGE_1_CLEAR,
         STAGE_2,
-        STAGE_2_CLEAR,
         STAGE_3,
-        STAGE_3_CLEAR,
         END_PAGE
     } page_state_t;
 

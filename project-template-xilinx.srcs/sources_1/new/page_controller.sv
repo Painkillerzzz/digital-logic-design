@@ -49,57 +49,36 @@ module page_controller(
             end
             STAGE_1: begin
                 if (kb_change && stage_state == CLEAR) begin
-                    next_state = STAGE_1_CLEAR;
+                    next_state = STAGE_2;
                 end else if (kb_change && stage_state == FAIL) begin
                     next_state = START_PAGE;
                 end else begin
                     next_state = STAGE_1;
                 end
             end
-            STAGE_1_CLEAR: begin
-                if (kb_change) begin
-                    next_state = STAGE_2;
-                end else begin
-                    next_state = STAGE_1_CLEAR;
-                end
-            end
             STAGE_2: begin
                 if (kb_change && stage_state == CLEAR) begin
-                    next_state = STAGE_2_CLEAR;
+                    next_state = STAGE_3;
                 end else if (kb_change && stage_state == FAIL) begin
                     next_state = START_PAGE;
                 end else begin
                     next_state = STAGE_2;
-                end
-            end
-            STAGE_2_CLEAR: begin
-                if (kb_change) begin
-                    next_state = STAGE_3;
-                end else begin
-                    next_state = STAGE_2_CLEAR;
                 end
             end
             STAGE_3: begin
                 if (kb_change && stage_state == CLEAR) begin
-                    next_state = STAGE_3_CLEAR;
+                    next_state = END_PAGE;
                 end else if (kb_change && stage_state == FAIL) begin
                     next_state = START_PAGE;
                 end else begin
                     next_state = STAGE_3;
-                end
-            end
-            STAGE_3_CLEAR: begin
-                if (kb_change) begin
-                    next_state = END_PAGE;
-                end else begin
-                    next_state = STAGE_3_CLEAR;
                 end
             end
             END_PAGE: begin
                 if (kb_change) begin
                     next_state = START_PAGE;
                 end else begin
-                    next_state = STAGE_3_CLEAR;
+                    next_state = END_PAGE;
                 end
             end
             default: begin

@@ -94,7 +94,7 @@ module compute_pos (
                 end
                 crt_cnt <= crt_cnt + 1;
                 cnt_traj <=0;
-            end else if(cnt_traj==8_333_332)begin
+            end else if(cnt_traj==6_666_666)begin
                 if(blue_centered)begin
                     red_xc <= next_pos_xc;
                     red_yc <= next_pos_yc;

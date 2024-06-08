@@ -1,10 +1,10 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Thu Jun  6 22:53:21 2024
-// Host        : localhost running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub
-//               d:/Documents/2024_Spring/Digital_Logic/digital-design-grp-12/project-template-xilinx.srcs/sources_1/ip/correct_2/correct_2_stub.v
+// Date        : Sat Jun  8 22:27:50 2024
+// Host        : MSI running 64-bit major release  (build 9200)
+// Command     : write_verilog -force -mode synth_stub -rename_top correct_2 -prefix
+//               correct_2_ correct_2_stub.v
 // Design      : correct_2
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a200tfbg484-2

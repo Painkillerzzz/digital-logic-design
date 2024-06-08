@@ -1,8 +1,8 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Tue May 14 17:18:20 2024
-// Host        : localhost running 64-bit major release  (build 9200)
+// Date        : Wed Jun  5 22:20:37 2024
+// Host        : MSI running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode synth_stub -rename_top ip_rgb2dvi -prefix
 //               ip_rgb2dvi_ ip_rgb2dvi_stub.v
 // Design      : ip_rgb2dvi
