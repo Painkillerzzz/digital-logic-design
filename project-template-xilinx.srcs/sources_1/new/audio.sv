@@ -1,3 +1,5 @@
+import namespace::*;
+
 module audio #(
         parameter   MCNT_125_MAX = 40_000_000, // 0.5s 
                     STACCATO_MAX = 35_000_000, // 0.45s
@@ -43,6 +45,7 @@ module audio #(
     (
         input  wire clk,
         input  wire rst,
+        input page_state_t page_state,
         output reg  audio_out,
         output reg  check_out
     );
@@ -50,7 +53,7 @@ module audio #(
     reg  [31:0] ctr_arr;    // 预重装�??
     wire [31:0] ctr_crr;    // 比较�???????
     reg  [8:0]  pitch_num;  // 音乐的音调编�???????
-    wire [7:0]  pitch;      // 音乐的音�???????
+    reg [7:0]  pitch;      // 音乐的音�???????
     reg  pwm_gen_en;
         
     //根据 rom 存储输出不同的音调输出不同的预置�???????
@@ -101,14 +104,24 @@ module audio #(
             endcase
         end
     end
-
+    wire [7:0] s1_mu;
+    wire [7:0] s2_mu;
     // 实例�??????? rom
     test_music music (
         .clka(clk),        // input  wire clka
         .addra(pitch_num), // input  wire [8:0] addra
-        .douta(pitch)      // output wire [7:0] douta
+        .douta(s2_mu)      // output wire [7:0] douta
     );
-
+    s1_music u_s1_music(
+        .clka(clk),
+        .addra(pitch_num),
+        .douta(s1_mu)
+    );
+    always_comb begin
+        if(page_state==STAGE_1)pitch = s1_mu;
+        else if (page_state==STAGE_2)pitch =s2_mu;
+        else pitch = 0;
+    end
     reg [25:0] cnt_125;
 
     // 分频125ms
@@ -122,13 +135,23 @@ module audio #(
         end
     end
 
+    page_state_t last_page_stage;
+
     // 循环分配音调
     always @(posedge clk) begin
         if(rst) begin
             pitch_num <= 0;
             pwm_gen_en <= 1;
             check_out <= 0;
+            last_page_stage <= START_PAGE;
         end else begin
+            if(page_state!=START_PAGE)begin
+            if(last_page_stage!=page_state)begin
+                pitch_num <= 0;
+                pwm_gen_en <= 1;
+                check_out <= 0;
+                last_page_stage<=page_state;
+            end
             if(cnt_125 == MCNT_125_MAX - 1) begin
                 pitch_num <= pitch_num + 1;
             end else begin
@@ -143,6 +166,7 @@ module audio #(
                 check_out <= 1;
             end else if(cnt_125 == CHECK_END - 1) begin
                 check_out <= 0;
+            end
             end
         end
     end

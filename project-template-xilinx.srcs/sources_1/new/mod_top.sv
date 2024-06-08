@@ -210,6 +210,7 @@ module mod_top(
     audio u_audio (
         .clk(clk_in),
         .rst(btn_rst),
+        .page_state(page_state),
         .audio_out(beep),
         .check_out(check_en)
     );
@@ -255,14 +256,6 @@ module mod_top(
                 if(health <= 0) begin
                     stage_state = FAIL;
                 end else if(xc == TARGET_XC_2 && yc == TARGET_YC_2)
-                    stage_state = CLEAR;
-                else begin
-                    stage_state = EXECUTING;
-                end
-            STAGE_3:
-                if(health <= 0) begin
-                    stage_state = FAIL;
-                end else if(xc == TARGET_XC_3 && yc == TARGET_YC_3)
                     stage_state = CLEAR;
                 else begin
                     stage_state = EXECUTING;

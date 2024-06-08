@@ -263,23 +263,22 @@ module back_pixel_gen(
     output reg [23:0] back_pixel
 );
     wire [18:0] addra ;
-    wire [23:0] s1_rgb;
-    wire [23:0] s2_rgb;
+    wire [11:0] s1_rgb;
+    wire [11:0] s2_rgb;
     assign addra = write_h + write_v*800;
-    // s1_bg s1(
-    //     .clka(clk_sram),
-    //     .addra(addra),
-    //     .douta(s1_rgb)
-    // );
+    s1_bg s1(
+        .clka(clk_sram),
+        .addra(addra),
+        .douta(s1_rgb)
+    );
     s2_bg s2(
         .clka(clk_sram),
         .addra(addra),
         .douta(s2_rgb)
     );
     always_comb begin
-        if(page_state==STAGE_1)back_pixel = {s1_rgb[23:16],s1_rgb[7:0],s1_rgb[15:8]};
-        else if(page_state==STAGE_2)back_pixel = {s2_rgb[23:16],s2_rgb[7:0],s2_rgb[15:8]};
-        else if(page_state==STAGE_3)back_pixel={0,0,0};
+        if(page_state==STAGE_1)back_pixel ={s1_rgb[11:8],s1_rgb[11:8],s1_rgb[3:0],s1_rgb[3:0],s1_rgb[7:4],s1_rgb[7:4]};
+        else if(page_state==STAGE_2)back_pixel = {s2_rgb[11:8],s2_rgb[11:8],s2_rgb[3:0],s2_rgb[3:0],s2_rgb[7:4],s2_rgb[7:4]};
         else back_pixel = 0;
     end
 endmodule

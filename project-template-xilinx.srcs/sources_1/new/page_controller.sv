@@ -32,7 +32,7 @@ module page_controller(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            page_state <= STAGE_2; // TODO: Change to START_PAGE
+            page_state <= START_PAGE; // TODO: Change to START_PAGE
         end else begin
             page_state <= next_state;
         end
@@ -58,20 +58,11 @@ module page_controller(
             end
             STAGE_2: begin
                 if (kb_change && stage_state == CLEAR) begin
-                    next_state = STAGE_3;
-                end else if (kb_change && stage_state == FAIL) begin
-                    next_state = START_PAGE;
-                end else begin
-                    next_state = STAGE_2;
-                end
-            end
-            STAGE_3: begin
-                if (kb_change && stage_state == CLEAR) begin
                     next_state = END_PAGE;
                 end else if (kb_change && stage_state == FAIL) begin
                     next_state = START_PAGE;
                 end else begin
-                    next_state = STAGE_3;
+                    next_state = STAGE_2;
                 end
             end
             END_PAGE: begin

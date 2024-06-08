@@ -49,39 +49,66 @@ module compute_pos (
 
     reg crt_ena_1 = (page_state == STAGE_1);
     reg crt_ena_2 = (page_state == STAGE_2);
-    reg crt_ena_3 = (page_state == STAGE_3);
 
-// correct_1 correct_1 (
-//     .clka(clk),    // input  wire clka
-//     .ena(crt_ena_1),
-//     .addra(crt_cnt),    // input  wire [16:0] addra
-//     .douta(crt_data) // output wire [7:0] douta
-// );
+    wire [23:0] crt1;
+    wire [23:0] crt2;
+    correct_1 correct_1 (
+        .clka(clk),    // input  wire clka
+        .ena(crt_ena_1),
+        .addra(crt_cnt),    // input  wire [16:0] addra
+        .douta(crt1) // output wire [7:0] douta
+    );
 
     correct_2 correct_2 (
         .clka(clk),    // input  wire clka
-        .ena(1),
+        .ena(crt_ena_2),
         .addra(crt_cnt),    // input  wire [16:0] addra
-        .douta(crt_data) // output wire [7:0] douta
+        .douta(crt2) // output wire [7:0] douta
     );
-
+    always_comb begin
+        if(page_state == STAGE_1)crt_data = crt1;
+        else if (page_state==STAGE_2)crt_data = crt2;
+        else crt_data = 0;
+    end 
 // correct_3 correct_3 (
 //     .clka(clk),    // input  wire clka
 //     .ena(crt_ena_3),
 //     .addra(crt_cnt),    // input  wire [16:0] addra
 //     .douta(crt_data) // output wire [7:0] douta
 // );
-
+    page_state_t last_page_stage;
     always_ff @(posedge clk) begin
         if(rst) begin
-            blue_xc <= 109;
-            blue_yc <= 327;
-            red_xc <= 66;
-            red_yc <= 327;
+            // blue_xc <= 109;
+            // blue_yc <= 327;
+            // red_xc <= 66;
+            // red_yc <= 327;
+            blue_xc <= 111;
+            blue_yc <= 290;
+            red_xc <= 68;
+            red_yc <= 290;
             cnt_traj <= 0;
             crt_cnt <= 8'b0;
             blue_centered <= 1;
+            last_page_stage =START_PAGE;
         end else begin
+            if(last_page_stage!=page_state)begin
+                if(page_state==STAGE_1)begin
+                    blue_xc <= 111;
+                    blue_yc <= 290;
+                    red_xc <= 68;
+                    red_yc <= 290;
+                end else if(page_state == STAGE_2)begin
+                    blue_xc <= 109;
+                    blue_yc <= 327;
+                    red_xc <= 66;
+                    red_yc <= 327;
+                end
+                cnt_traj <= 0;
+                crt_cnt <= 8'b0;
+                blue_centered <= 1;
+                last_page_stage =page_state;
+            end
             if(kb_change && stage_state == EXECUTING) begin
                 if(blue_centered)begin
                     red_xc <= crted_x;

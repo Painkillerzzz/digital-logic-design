@@ -27,7 +27,6 @@ package namespace;
         START_PAGE,
         STAGE_1,
         STAGE_2,
-        STAGE_3,
         END_PAGE
     } page_state_t;
 
@@ -41,9 +40,7 @@ package namespace;
     parameter   TARGET_XC_1 = 711,
                 TARGET_YC_1 = 327,
                 TARGET_XC_2 = 711,
-                TARGET_YC_2 = 327,
-                TARGET_XC_3 = 711,
-                TARGET_YC_3 = 327;
+                TARGET_YC_2 = 327;
 
 endpackage
 
