@@ -1,10 +1,10 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Mon May 20 22:06:07 2024
-// Host        : MSI running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub
-//               C:/Users/Harrison/source/repos/digital-design-grp-12/project-template-xilinx.srcs/sources_1/ip/castle_in_the_sky/castle_in_the_sky_stub.v
+// Date        : Sat May 18 20:21:52 2024
+// Host        : localhost running 64-bit major release  (build 9200)
+// Command     : write_verilog -force -mode synth_stub -rename_top castle_in_the_sky -prefix
+//               castle_in_the_sky_ castle_in_the_sky_stub.v
 // Design      : castle_in_the_sky
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a200tfbg484-2
