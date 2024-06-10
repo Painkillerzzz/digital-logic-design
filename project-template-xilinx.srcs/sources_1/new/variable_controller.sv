@@ -37,8 +37,13 @@ package namespace;
         FAIL
     } stage_state_t;
 
-    parameter   TARGET_XC_1 = 711,
-                TARGET_YC_1 = 327,
+    parameter   R = 43,
+                START_XC_1 = 111,
+                START_YC_1 = 290,
+                START_XC_2 = 109,
+                START_YC_2 = 327,
+                TARGET_XC_1 = 713,
+                TARGET_YC_1 = 333,
                 TARGET_XC_2 = 711,
                 TARGET_YC_2 = 327;
 

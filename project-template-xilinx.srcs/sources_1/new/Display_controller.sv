@@ -111,7 +111,7 @@ module display_controller
                     // 如果写入没有完成
                     if( finish != 1 ) begin
                         // 计算写入的像�??????????????
-                        write_pixel = ball_pixel==0?back_pixel:ball_pixel;
+                        write_pixel = (ball_pixel == 0 || stage_state == START_PAGE || stage_state == END_PAGE) ? back_pixel : ball_pixel;
                         // 设置SRAM状�?�为写入
                         sram_data_t = 0;
                         // 计算写入的地�??????????????
@@ -176,8 +176,9 @@ module display_controller
                         stage = 4;
                     end else if( finish != 1 && read_h < (HMAX - 1) )begin
                         stage = 0;
-                    end else
+                    end else begin
                         stage = 4;
+                    end
                 end
             endcase
         end   
@@ -188,8 +189,9 @@ module display_controller
         if ( btn_rst ) begin
             finish = 0;
             write = 0;
-        end else if( finish != 1 && (write_v == (VSIZE - 1) )&& ( write_h == (HSIZE - 1) ) )
+        end else if( finish != 1 && (write_v == (VSIZE - 1) ) && ( write_h == (HSIZE - 1) ) ) begin
             finish = 1;
+        end
         // 如果显存写入完毕并且�??????????次读取已经完�??????????
         else if( finish == 1 && (read_v == (VMAX - 1) ) && ( read_h == (HMAX - 1) ) ) begin
             finish = 0;
@@ -255,41 +257,53 @@ module display_controller
     );
 
 endmodule
+
+
 module back_pixel_gen(
     input wire clk_sram,
     input page_state_t page_state,
-    input wire [11:0] write_h,
-    input wire [11:0] write_v,
+    input pos write_h,
+    input pos write_v,
     output reg [23:0] back_pixel
 );
     wire [18:0] addra ;
-    wire [11:0] s1_rgb;
-    wire [11:0] s2_rgb;
+    pos s1_rgb;
+    pos s2_rgb;
     assign addra = write_h + write_v*800;
+
     s1_bg s1(
         .clka(clk_sram),
         .addra(addra),
         .douta(s1_rgb)
     );
+
     s2_bg s2(
         .clka(clk_sram),
         .addra(addra),
         .douta(s2_rgb)
     );
+
     always_comb begin
-        if(page_state==STAGE_1)back_pixel ={s1_rgb[11:8],s1_rgb[11:8],s1_rgb[3:0],s1_rgb[3:0],s1_rgb[7:4],s1_rgb[7:4]};
-        else if(page_state==STAGE_2)back_pixel = {s2_rgb[11:8],s2_rgb[11:8],s2_rgb[3:0],s2_rgb[3:0],s2_rgb[7:4],s2_rgb[7:4]};
-        else back_pixel = 0;
+        if(page_state==STAGE_1) begin
+            back_pixel ={s1_rgb[11:8],s1_rgb[11:8],s1_rgb[3:0],s1_rgb[3:0],s1_rgb[7:4],s1_rgb[7:4]};
+        end else if(page_state==STAGE_2) begin
+            back_pixel = {s2_rgb[11:8],s2_rgb[11:8],s2_rgb[3:0],s2_rgb[3:0],s2_rgb[7:4],s2_rgb[7:4]};
+        end else begin
+            back_pixel = 0;
+        end
     end
+
 endmodule
+
+
 module ball_pixel_gen(
     input wire clk_sram,
-    input wire[11:0] blueball_xc,
-    input wire[11:0] blueball_yc,
-    input wire[11:0] redball_xc,
-    input wire[11:0] redball_yc,
-    input wire [11:0] write_h,
-    input wire [11:0] write_v,
+    input pos blueball_xc,
+    input pos blueball_yc,
+    input pos redball_xc,
+    input pos redball_yc,
+    input pos write_h,
+    input pos write_v,
     input wire write,
     output reg [23:0] ball_pixel
 );
@@ -307,14 +321,14 @@ module ball_pixel_gen(
     wire [7:0]blb_b;
     wire drawing_rb;
     wire drawing_bb;
-    assign drawing_bb = write_h>=blueball_xc-15&&write_h<blueball_xc+15&&write_v>=blueball_yc-15&&write_v<blueball_yc+15;
-    assign drawing_rb = write_h>=redball_xc-15&&write_h<redball_xc+15&&write_v>=redball_yc-15&&write_v<redball_yc+15;
-    assign draw_x_b = drawing_bb?write_h - blueball_xc+15:0;
-    assign draw_y_b = drawing_bb?write_v - blueball_yc+15:0;
-    assign draw_x_r = drawing_rb?write_h - redball_xc+15:0;
-    assign draw_y_r = drawing_rb?write_v - redball_yc+15:0;
-    assign addra_r = draw_x_r+draw_y_r*30;
-    assign addra_b = draw_x_b+draw_y_b*30;
+    assign drawing_bb = write_h >= blueball_xc - 15 && write_h < blueball_xc + 15 && write_v >= blueball_yc - 15 && write_v < blueball_yc + 15;
+    assign drawing_rb = write_h >= redball_xc - 15 && write_h < redball_xc + 15 && write_v >= redball_yc - 15 && write_v < redball_yc + 15;
+    assign draw_x_b   = drawing_bb ? write_h - blueball_xc + 15 : 0;
+    assign draw_y_b   = drawing_bb ? write_v - blueball_yc + 15 : 0;
+    assign draw_x_r   = drawing_rb ? write_h - redball_xc+15:0;
+    assign draw_y_r   = drawing_rb ? write_v - redball_yc+15:0;
+    assign addra_r    = draw_x_r + draw_y_r * 30;
+    assign addra_b    = draw_x_b + draw_y_b * 30;
 
     redball_R rbr(
         .clka(clk_sram),

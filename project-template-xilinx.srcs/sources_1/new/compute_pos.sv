@@ -77,6 +77,7 @@ module compute_pos (
 //     .douta(crt_data) // output wire [7:0] douta
 // );
     page_state_t last_page_stage;
+
     always_ff @(posedge clk) begin
         if(rst) begin
             // blue_xc <= 109;
@@ -90,26 +91,25 @@ module compute_pos (
             cnt_traj <= 0;
             crt_cnt <= 8'b0;
             blue_centered <= 1;
-            last_page_stage =START_PAGE;
+            last_page_stage <= START_PAGE;
         end else begin
-            if(last_page_stage!=page_state)begin
+            if(last_page_stage != page_state)begin
                 if(page_state==STAGE_1)begin
-                    blue_xc <= 111;
-                    blue_yc <= 290;
-                    red_xc <= 68;
-                    red_yc <= 290;
+                    blue_xc <= START_XC_1;
+                    blue_yc <= START_YC_1;
+                    red_xc <= START_XC_1 - R;
+                    red_yc <= START_YC_1;
                 end else if(page_state == STAGE_2)begin
-                    blue_xc <= 109;
-                    blue_yc <= 327;
-                    red_xc <= 66;
-                    red_yc <= 327;
+                    blue_xc <= START_XC_2;
+                    blue_yc <= START_YC_2;
+                    red_xc <= START_XC_2 - R;
+                    red_yc <= START_YC_2;
                 end
                 cnt_traj <= 0;
-                crt_cnt <= 8'b0;
+                crt_cnt <= 0;
                 blue_centered <= 1;
-                last_page_stage =page_state;
-            end
-            if(kb_change && stage_state == EXECUTING) begin
+                last_page_stage <= page_state;
+            end else if(kb_change && stage_state == EXECUTING) begin
                 if(blue_centered)begin
                     red_xc <= crted_x;
                     red_yc <= crted_y;

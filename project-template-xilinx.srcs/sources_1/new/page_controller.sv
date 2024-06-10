@@ -32,7 +32,7 @@ module page_controller(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            page_state <= START_PAGE; // TODO: Change to START_PAGE
+            page_state <= START_PAGE;
         end else begin
             page_state <= next_state;
         end

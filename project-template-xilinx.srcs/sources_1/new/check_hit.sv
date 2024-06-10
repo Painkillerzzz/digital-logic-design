@@ -29,6 +29,7 @@ module check_hit #(
     reg decreased;
 
     state_t current_state, next_state;
+    page_state_t last_page_stage;
     
     // State machine
     always_ff @(posedge clk) begin
@@ -71,6 +72,14 @@ module check_hit #(
             health_decrease <= 0;
             death_cause <= 0;
             decreased <= 0;
+            last_page_stage <= START_PAGE;
+        end else if (last_page_stage != page_state) begin
+            hit_cnt <= 0;
+            health <= TOTAL_HEALTH;
+            health_decrease <= 0;
+            death_cause <= 0;
+            decreased <= 0;
+            last_page_stage <= page_state;
         end else begin
             case (current_state)
                 IDLE: begin
