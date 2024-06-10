@@ -97,13 +97,13 @@ module compute_pos (
                 if(page_state==STAGE_1)begin
                     blue_xc <= START_XC_1;
                     blue_yc <= START_YC_1;
-                    red_xc <= START_XC_1 - R;
-                    red_yc <= START_YC_1;
+                    red_xc <= START_XC_1-37;
+                    red_yc <= START_YC_1-22;
                 end else if(page_state == STAGE_2)begin
                     blue_xc <= START_XC_2;
                     blue_yc <= START_YC_2;
-                    red_xc <= START_XC_2 - R;
-                    red_yc <= START_YC_2;
+                    red_xc <= START_XC_2 -37;
+                    red_yc <= START_YC_2- 22;
                 end
                 cnt_traj <= 0;
                 crt_cnt <= 0;

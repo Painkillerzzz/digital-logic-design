@@ -211,6 +211,7 @@ module mod_top(
         .clk(clk_in),
         .rst(btn_rst),
         .page_state(page_state),
+        .stage_state(stage_state),
         .audio_out(beep),
         .check_out(check_en)
     );
@@ -225,6 +226,7 @@ module mod_top(
         .rst(btn_rst),
         .scancode_change(scancode_change),
         .page_state(page_state),
+        .stage_state(stage_state),
         .check_en(check_en),
         .health(health_origin),
         .death_cause(death_cause),

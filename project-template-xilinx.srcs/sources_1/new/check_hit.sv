@@ -12,6 +12,7 @@ module check_hit #(
     input wire scancode_change,
     input wire check_en,
     input page_state_t page_state,
+    input stage_state_t stage_state,
     output reg [8:0] health,
     output reg [1:0] death_cause,
     output reg hit_cnt
@@ -86,13 +87,9 @@ module check_hit #(
                     hit_cnt <= 0;
                     health_decrease <= HEALTH_DE;
                     decreased <= 0;
-                    if(scancode_change) begin
-                        if(hit_cnt == 0) begin
-                            hit_cnt <= 1;
-                        end else begin
-                            death_cause <= 1;
-                            health <= 0;
-                        end
+                    if(scancode_change && stage_state == EXECUTING) begin
+                        death_cause <= 1;
+                        health <= 0;
                     end
                 end
                 DOWN: begin

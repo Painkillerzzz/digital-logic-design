@@ -111,7 +111,7 @@ module display_controller
                     // 如果写入没有完成
                     if( finish != 1 ) begin
                         // 计算写入的像�??????????????
-                        write_pixel = (ball_pixel == 0 || stage_state == START_PAGE || stage_state == END_PAGE) ? back_pixel : ball_pixel;
+                        write_pixel = (ball_pixel == 0 || stage_state!=EXECUTING) ? back_pixel : ball_pixel;
                         // 设置SRAM状�?�为写入
                         sram_data_t = 0;
                         // 计算写入的地�??????????????
@@ -213,7 +213,8 @@ module display_controller
         .write_h(write_h),
         .write_v(write_v),
         .back_pixel(back_pixel),
-        .page_state(page_state)
+        .page_state(page_state),
+        .stage_state(stage_state)
     );
 
     ball_pixel_gen ball_pixel_gen(
@@ -262,15 +263,20 @@ endmodule
 module back_pixel_gen(
     input wire clk_sram,
     input page_state_t page_state,
+    input stage_state_t stage_state,
     input pos write_h,
     input pos write_v,
     output reg [23:0] back_pixel
 );
     wire [18:0] addra ;
+    wire [15:0] word_addra;
     pos s1_rgb;
     pos s2_rgb;
+    wire [1:0] word_start_rgb;
+    wire [1:0] word_failed_rgb;
+    wire [1:0] word_clear_rgb;
     assign addra = write_h + write_v*800;
-
+    assign word_addra = write_h-200 + (write_v-200)*400;
     s1_bg s1(
         .clka(clk_sram),
         .addra(addra),
@@ -282,14 +288,53 @@ module back_pixel_gen(
         .addra(addra),
         .douta(s2_rgb)
     );
-
+    start_page sp(
+        .clka(clk_sram),
+        .addra(word_addra),
+        .douta(word_start_rgb)
+    );
+    stage_fail_board sf(
+        .clka(clk_sram),
+        .addra(word_addra),
+        .douta(word_failed_rgb)
+    );
+    stage_clear_board sc(
+        .clka(clk_sram),
+        .addra(word_addra),
+        .douta(word_clear_rgb)
+    );
     always_comb begin
-        if(page_state==STAGE_1) begin
+        if(page_state==STAGE_1&&stage_state!=FAIL&&stage_state!=CLEAR) begin
             back_pixel ={s1_rgb[11:8],s1_rgb[11:8],s1_rgb[3:0],s1_rgb[3:0],s1_rgb[7:4],s1_rgb[7:4]};
-        end else if(page_state==STAGE_2) begin
+        end else if(page_state==STAGE_2&&stage_state!=FAIL&&stage_state!=CLEAR) begin
             back_pixel = {s2_rgb[11:8],s2_rgb[11:8],s2_rgb[3:0],s2_rgb[3:0],s2_rgb[7:4],s2_rgb[7:4]};
         end else begin
-            back_pixel = 0;
+            if(write_h>=200 && write_h<600 && write_v>=200 && write_v<327)begin
+                if(page_state==START_PAGE)begin
+                    case(word_start_rgb)
+                        2'b00: back_pixel = 0;
+                        2'b01: back_pixel = {8'd0,8'd255,8'd127};
+                        2'b10: back_pixel = {8'd255,8'd0,8'd0};
+                        2'b11: back_pixel = {8'd255,8'd255,8'd255};
+                    endcase
+                end
+                else if(stage_state==FAIL)begin
+                    case(word_failed_rgb)
+                        2'b00: back_pixel = 0;
+                        2'b01: back_pixel = {8'd0,8'd255,8'd127};
+                        2'b10: back_pixel = {8'd255,8'd0,8'd0};
+                        2'b11: back_pixel = {8'd255,8'd255,8'd255};
+                    endcase
+                end
+                else if(stage_state==CLEAR||page_state==END_PAGE)begin
+                    case(word_clear_rgb)
+                        2'b00: back_pixel = 0;
+                        2'b01: back_pixel = {8'd0,8'd255,8'd127};
+                        2'b10: back_pixel = {8'd255,8'd0,8'd0};
+                        2'b11: back_pixel = {8'd255,8'd255,8'd255};
+                    endcase
+                end
+            end else back_pixel=0;
         end
     end
 
