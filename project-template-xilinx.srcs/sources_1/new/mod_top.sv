@@ -244,26 +244,36 @@ module mod_top(
         .page_state(page_state)
     );
 
+    stage_state_t next_stage_state;
+
+    always_ff @(posedge clk_in) begin
+        if (btn_rst) begin
+            stage_state <= IDLE;
+        end else begin
+            stage_state <= next_stage_state;
+        end
+    end
+
     always_comb begin
         case(page_state)
             STAGE_1:
                 if(health <= 0) begin
-                    stage_state = FAIL;
+                    next_stage_state = FAIL;
                 end else if(xc == TARGET_XC_1 && yc == TARGET_YC_1)
-                    stage_state = CLEAR;
+                    next_stage_state = CLEAR;
                 else begin
-                    stage_state = EXECUTING;
+                    next_stage_state = EXECUTING;
                 end
             STAGE_2:
                 if(health <= 0) begin
-                    stage_state = FAIL;
+                    next_stage_state = FAIL;
                 end else if(xc == TARGET_XC_2 && yc == TARGET_YC_2)
-                    stage_state = CLEAR;
+                    next_stage_state = CLEAR;
                 else begin
-                    stage_state = EXECUTING;
+                    next_stage_state = EXECUTING;
                 end
             default:
-                stage_state = IDLE;
+                next_stage_state = IDLE;
         endcase
     end
 

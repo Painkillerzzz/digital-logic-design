@@ -19,7 +19,7 @@ module check_hit #(
 );
 
     typedef enum logic [1:0]{ 
-        IDLE,
+        EMPTY,
         DOWN,
         UP
     } state_t;
@@ -35,16 +35,16 @@ module check_hit #(
     // State machine
     always_ff @(posedge clk) begin
         if (rst) begin
-            current_state <= IDLE;
-            next_state <= IDLE;
+            current_state <= EMPTY;
+            next_state <= EMPTY;
         end else begin
             current_state <= next_state;
             case (current_state)
-                IDLE: begin
-                    if (check_en) begin
+                EMPTY: begin
+                    if (check_en && stage_state == EXECUTING) begin
                         next_state <= DOWN;
                     end else begin
-                        next_state <= IDLE;
+                        next_state <= EMPTY;
                     end
                 end
                 DOWN: begin
@@ -56,7 +56,7 @@ module check_hit #(
                 end
                 UP: begin
                     if (!check_en) begin
-                        next_state <= IDLE;
+                        next_state <= EMPTY;
                     end else begin
                         next_state <= UP;
                     end
@@ -70,20 +70,20 @@ module check_hit #(
         if (rst) begin
             hit_cnt <= 0;
             health <= TOTAL_HEALTH;
-            health_decrease <= 0;
+            health_decrease <= HEALTH_DE;
             death_cause <= 0;
             decreased <= 0;
             last_page_stage <= START_PAGE;
         end else if (last_page_stage != page_state) begin
             hit_cnt <= 0;
             health <= TOTAL_HEALTH;
-            health_decrease <= 0;
+            health_decrease <= HEALTH_DE;
             death_cause <= 0;
             decreased <= 0;
             last_page_stage <= page_state;
         end else begin
             case (current_state)
-                IDLE: begin
+                EMPTY: begin
                     hit_cnt <= 0;
                     health_decrease <= HEALTH_DE;
                     decreased <= 0;
@@ -120,7 +120,7 @@ module check_hit #(
                         // interval_cnt <= 0;
                     end else begin
                         if(scancode_change) begin
-                            if(hit_cnt == 1) begin
+                            if(hit_cnt == 0) begin
                                 hit_cnt <= 1;
                                 if(!decreased) begin
                                     decreased <= 1;
