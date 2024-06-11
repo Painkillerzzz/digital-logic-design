@@ -1,5 +1,9 @@
+`timescale 1ns / 1ps
+
+import namespace::*;
+
 module check_hit #(
-    parameter INTERVAL = 2_000_000, // check interval length / 2 / TOTAL_HEALTH
+    parameter INTERVAL = 3_960_000, // check interval length / HEALTH_DE
               TOTAL_HEALTH = 100,
               HEALTH_DE = 5
 ) (
@@ -7,13 +11,15 @@ module check_hit #(
     input wire rst,
     input wire scancode_change,
     input wire check_en,
-    output reg [7:0] health,
+    input page_state_t page_state,
+    input stage_state_t stage_state,
+    output reg [8:0] health,
     output reg [1:0] death_cause,
-    output reg [5:0] hit_cnt
+    output reg hit_cnt
 );
 
     typedef enum logic [1:0]{ 
-        IDLE,
+        EMPTY,
         DOWN,
         UP
     } state_t;
@@ -24,20 +30,21 @@ module check_hit #(
     reg decreased;
 
     state_t current_state, next_state;
+    page_state_t last_page_stage;
     
     // State machine
     always_ff @(posedge clk) begin
         if (rst) begin
-            current_state <= IDLE;
-            next_state <= IDLE;
+            current_state <= EMPTY;
+            next_state <= EMPTY;
         end else begin
             current_state <= next_state;
             case (current_state)
-                IDLE: begin
-                    if (check_en) begin
+                EMPTY: begin
+                    if (check_en && stage_state == EXECUTING) begin
                         next_state <= DOWN;
                     end else begin
-                        next_state <= IDLE;
+                        next_state <= EMPTY;
                     end
                 end
                 DOWN: begin
@@ -49,7 +56,7 @@ module check_hit #(
                 end
                 UP: begin
                     if (!check_en) begin
-                        next_state <= IDLE;
+                        next_state <= EMPTY;
                     end else begin
                         next_state <= UP;
                     end
@@ -63,29 +70,32 @@ module check_hit #(
         if (rst) begin
             hit_cnt <= 0;
             health <= TOTAL_HEALTH;
-            health_decrease <= 0;
+            health_decrease <= HEALTH_DE;
             death_cause <= 0;
             decreased <= 0;
+            last_page_stage <= START_PAGE;
+        end else if (last_page_stage != page_state) begin
+            hit_cnt <= 0;
+            health <= TOTAL_HEALTH;
+            health_decrease <= HEALTH_DE;
+            death_cause <= 0;
+            decreased <= 0;
+            last_page_stage <= page_state;
         end else begin
             case (current_state)
-                IDLE: begin
+                EMPTY: begin
                     hit_cnt <= 0;
                     health_decrease <= HEALTH_DE;
                     decreased <= 0;
-                    if(scancode_change) begin
-                        if(hit_cnt <= 1) begin
-                            hit_cnt <= hit_cnt + 1;
-                        end else begin
-                            death_cause <= 1;
-                            health <= 0;
-                        end
-                        
+                    if(scancode_change && stage_state == EXECUTING) begin
+                        death_cause <= 1;
+                        health <= 0;
                     end
                 end
                 DOWN: begin
                     if(scancode_change) begin
-                        if(hit_cnt <= 2) begin
-                            hit_cnt <= hit_cnt + 1;
+                        if(hit_cnt == 0) begin
+                            hit_cnt <= 1;
                             if(!decreased) begin
                                 decreased <= 1;
                                 health <= health - health_decrease;
@@ -110,8 +120,8 @@ module check_hit #(
                         // interval_cnt <= 0;
                     end else begin
                         if(scancode_change) begin
-                            if(hit_cnt <= 2) begin
-                                hit_cnt <= hit_cnt + 1;;
+                            if(hit_cnt == 0) begin
+                                hit_cnt <= 1;
                                 if(!decreased) begin
                                     decreased <= 1;
                                     health <= health - health_decrease;
@@ -145,5 +155,4 @@ module check_hit #(
             bias_cnt <= 0;
         end
     end
-    
 endmodule
